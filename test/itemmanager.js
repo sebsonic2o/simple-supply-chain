@@ -1,7 +1,7 @@
 const ItemManager = artifacts.require("./ItemManager.sol");
 
-contract("ItemManager", accounts => {
-  it("...should let you create new Items.", async () => {
+contract("ItemManager", async accounts => {
+  it("should create new items", async () => {
     const itemManagerInstance = await ItemManager.deployed();
     const itemName = "test1";
     const itemPrice = 500;
