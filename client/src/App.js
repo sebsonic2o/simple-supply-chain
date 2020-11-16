@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import ItemManager from "./contracts/ItemManager.json";
-import Item from "./contracts/Item.json";
+import ItemManagerContract from "./contracts/ItemManager.json";
+import ItemContract from "./contracts/Item.json";
 import getWeb3 from "./getWeb3";
 
 import "./App.css";
@@ -17,16 +17,16 @@ class App extends Component {
       this.accounts = await this.web3.eth.getAccounts();
 
       // Get the contract instance.
-      const networkId = await this.web3.eth.net.getId();
+      this.networkId = await this.web3.eth.net.getId();
 
       this.itemManager = new this.web3.eth.Contract(
-        ItemManager.abi,
-        ItemManager.networks[networkId] && ItemManager.networks[networkId].address
+        ItemManagerContract.abi,
+        ItemManagerContract.networks[this.networkId] && ItemManagerContract.networks[this.networkId].address
       );
 
       this.item = new this.web3.eth.Contract(
-        Item.abi,
-        Item.networks[networkId] && Item.networks[networkId].address
+        ItemContract.abi,
+        ItemContract.networks[this.networkId] && ItemContract.networks[this.networkId].address
       );
 
       this.listenToPaymentEvent();
@@ -43,7 +43,7 @@ class App extends Component {
   listenToPaymentEvent = () => {
     let self = this;
     this.itemManager.events.SupplyChainEvent().on("data", async function(evt) {
-      if(evt.returnValues._status === 1) {
+      if(evt.returnValues._status === "1") {
         let item = await self.itemManager.methods.items(evt.returnValues._index).call();
         console.log(item);
         alert("Item " + item.identifier + " was paid. Please deliver it.");
@@ -75,10 +75,9 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <h1>Simply Payment/Supply Chain Example!</h1>
+        <h1>Simple Payment/Supply Chain Example</h1>
         <h2>Items</h2>
-
-        <h2>Add Element</h2>
+        <h2>Add Item</h2>
         Cost: <input type="text" name="cost" value={this.state.cost} onChange={this.handleInputChange} />
         Item Name: <input type="text" name="itemName" value={this.state.itemName} onChange={this.handleInputChange} />
         <button type="button" onClick={this.handleSubmit}>Create new Item</button>
